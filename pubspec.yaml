@@ -1,0 +1,33 @@
+name: palmcare
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  animated_background: ^2.0.0 
+  supabase_flutter: ^2.9.0
+  intl: ^0.20.2
+  fl_chart: ^1.0.0
+  http: ^0.13.5
+
+
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true 
+
+  assets:
+    - assets/images/background.jpg
+    - assets/images/palm_icon.png
+    - assets/images/farm_background.jpg
