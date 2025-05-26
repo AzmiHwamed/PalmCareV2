@@ -52,7 +52,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         // 👇 Insert user data into "users" table manually
         final existingUser =
-            await supabase.from('users').select().eq('email', email).single();
+            await supabase
+                .from('users')
+                .select()
+                .eq('id', user.id)
+                .maybeSingle();
 
         if (existingUser == null) {
           await supabase.from('users').insert({
@@ -60,20 +64,83 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'email': email,
             'password': password, // ⚠️ Not recommended to store plain passwords
           });
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('مبروك'),
+                content: const Text(
+                  'تم التسجيل بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    },
+                    child: const Text('حسناً'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('تنبيه'),
+                content: const Text('هذا البريد الإلكتروني مسجل بالفعل.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    },
+                    child: const Text('حسناً'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       }
 
       setState(() {
         _isLoading = false;
       });
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
     } catch (e) {
       setState(() {
-        _errorMessage = 'خطأ في الاتصال بالخادم: $e';
+        final errorMessage = e.toString();
+        final match = RegExp(r'after (\d+) seconds').firstMatch(errorMessage);
+        final waitTime = match != null ? match.group(1) : 'بضع';
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('تنبيه'),
+              content: Text(
+                'لقد قمت بالتسجيل مسبقاً. الرجاء الانتظار $waitTime ثانية قبل المحاولة مرة أخرى.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('حسناً'),
+                ),
+              ],
+            );
+          },
+        );
+
+        _errorMessage = null; // Clear error message as it's shown in the dialog
+        print('Error during registration: $e');
         _isLoading = false;
       });
     }

@@ -37,7 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      final response = await supabase.auth.signInWithPassword(email: email, password: password);
+      final response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
 
       if (response.session != null) {
         if (!mounted) return;
@@ -51,9 +54,27 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
       }
+      //I/flutter ( 1391): Login error: AuthApiException(message: Email not confirmed, statusCode: 400, code: email_not_confirmed)
     } catch (error) {
       setState(() {
-        _errorMessage = error.toString();
+        if (error.toString().contains('invalid_credentials')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('بيانات تسجيل الدخول غير صحيحة')),
+          );
+        } else if (error.toString().contains('email_not_confirmed')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'البريد الإلكتروني غير مفعل. يرجى تفعيل بريدك الإلكتروني.',
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('حدث خطأ أثناء تسجيل الدخول: $error')),
+          );
+        }
+        print('Login error: $error');
         _isLoading = false;
       });
     }
@@ -71,18 +92,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      await supabase.auth.resend(
-        type: OtpType.email,
-        email: email,
-      );
+      await supabase.auth.resend(type: OtpType.email, email: email);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم إرسال رابط التفعيل إلى بريدك')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
     }
   }
 
@@ -159,12 +177,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'تسجيل الدخول',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              'تسجيل الدخول',
+                              style: TextStyle(fontSize: 18),
+                            ),
                   ),
                 ),
 
