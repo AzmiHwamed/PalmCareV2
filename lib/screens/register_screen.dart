@@ -64,6 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'email': email,
             'password': password, // ⚠️ Not recommended to store plain passwords
           });
+          print(user.id);
           showDialog(
             context: context,
             builder: (BuildContext context) {

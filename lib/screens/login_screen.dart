@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('بيانات تسجيل الدخول غير صحيحة')),
           );
+          print('Invalid credentials: $error');
         } else if (error.toString().contains('email_not_confirmed')) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:palmcare/screens/monitor_solar_power.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // استيراد الصفحات
@@ -64,6 +65,7 @@ class PalmCareApp extends StatelessWidget {
             ),
         '/planningHistory':
             (context) => const PlanningHistoryScreen(userId: 'sample_user'),
+        '/monitor': (context) => const PanelBatteryMonitoringPage(),
       },
     );
   }

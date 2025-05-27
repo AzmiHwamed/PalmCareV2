@@ -22,7 +22,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
 
   Future<void> _submitPlanning() async {
     final user = supabase.auth.currentUser;
-    print('Current user: ${user?.id}');
+    print('Current user: ${user?.email}');
 
     if (user == null) {
       setState(() => _error = 'لم يتم العثور على المستخدم.');
